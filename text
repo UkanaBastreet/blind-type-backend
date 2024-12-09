@@ -1,0 +1,13 @@
+CREATE TABLE posts (likes INT);	                    Create a new table in the database
+SELECT * FROM posts;	                            Get all posts in the database
+SELECT * FROM posts WHERE likes > ${likes};	        Get all posts with more than 100 likes
+INSERT INTO posts (likes) VALUES (${likes});	    Insert a new post into the database
+UPDATE posts SET likes = 200;	                    Update all posts to have 200 likes
+DELETE FROM posts;                                 	Delete all posts in the database
+
+CREATE TABLE IF NOT EXISTS users ( 
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)`
