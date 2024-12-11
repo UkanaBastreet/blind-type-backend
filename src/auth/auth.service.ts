@@ -17,12 +17,10 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
-
   async login(userDto: CreateUserDto) {
     const user = await this.validateUser(userDto);
     return this.generateToken(user);
   }
-
   async registration(userDto: CreateUserDto) {
     const candidate = await this.usersService.getUserByEmail(userDto.email);
 
@@ -34,7 +32,6 @@ export class AuthService {
     }
 
     const hashPassword = await bcrypt.hash(userDto.password, 5);
-    console.log('hashPassword: ', hashPassword);
 
     const user = await this.usersService
       .create({
@@ -45,7 +42,6 @@ export class AuthService {
 
     return this.generateToken(user);
   }
-
   generateToken(user: User) {
     const payload = { email: user.email, id: user.id };
 
@@ -54,29 +50,23 @@ export class AuthService {
       token,
     });
   }
-
   async validateUser(userDto: CreateUserDto) {
     const user = await this.usersService.getUserByEmail(userDto.email);
     if (!user) {
       throw new NotFoundException('User with that email is not found');
     }
-    console.log('userDto: ', userDto);
-    console.log('user: ', user);
-
-    console.log(userDto.password, user.password);
 
     const passwordEquals = await bcrypt.compare(
       userDto.password,
       user.password,
     );
-    console.log('passwordEquals: ', passwordEquals);
 
     if (user && passwordEquals) {
       return user;
     }
 
     throw new UnauthorizedException({
-      message: 'Некорректный емайл или пароль',
+      message: 'Invalid email or password',
     });
   }
 }
