@@ -6,13 +6,15 @@ import {
   Patch,
   Param,
   Delete,
-  // Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('users')
+// @UseGuards(AuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -30,6 +32,10 @@ export class UsersController {
   findOne(@Param('email') email: string) {
     return this.usersService.findOne(email);
   }
+  @Get()
+  findOneBy(@Param() params: string[]) {
+    return this.usersService.findOneBy(params);
+  }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
@@ -38,6 +44,6 @@ export class UsersController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return 'this request response deleted item by id ' + id;
+    return this.usersService.remove(+id);
   }
 }
