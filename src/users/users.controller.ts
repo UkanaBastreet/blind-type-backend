@@ -12,16 +12,14 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
+import { RoleGuard } from 'src/guards/role.guard';
 
+@ApiTags('Пользователи')
 @Controller('users')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RoleGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
 
   @Get()
   findAll() {
@@ -31,6 +29,11 @@ export class UsersController {
   @Get(':id')
   findOne(@Param('email') email: string) {
     return this.usersService.findOne(email);
+  }
+
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create(createUserDto);
   }
   @Get()
   findOneBy(@Param() params: string[]) {
