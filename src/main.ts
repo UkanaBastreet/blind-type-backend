@@ -8,7 +8,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   const config = new DocumentBuilder()
-    .setTitle('Notes API')
+    .setTitle('Blind Type Backend')
     .setDescription('The notes API description')
     .setVersion('1.0')
     .build();
