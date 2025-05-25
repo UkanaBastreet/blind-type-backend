@@ -13,9 +13,9 @@ const app_service_1 = require("./app.service");
 const users_module_1 = require("./users/users.module");
 const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("./users/entities/user.entity");
 const jwt_1 = require("@nestjs/jwt");
 const auth_module_1 = require("./auth/auth.module");
+const typeorm_config_1 = require("./config/typeorm.config");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -27,15 +27,10 @@ exports.AppModule = AppModule = __decorate([
                 envFilePath: '.env.development.local',
                 isGlobal: true,
             }),
-            typeorm_1.TypeOrmModule.forRoot({
-                type: 'postgres',
-                database: process.env.POSTGRES_DATABASE,
-                host: process.env.POSTGRES_HOST,
-                password: process.env.POSTGRES_PASSWORD,
-                url: process.env.POSTGRES_URL,
-                username: process.env.POSTGRES_USER,
-                synchronize: true,
-                entities: [user_entity_1.User],
+            typeorm_1.TypeOrmModule.forRootAsync({
+                imports: [config_1.ConfigModule],
+                inject: [config_1.ConfigService],
+                useFactory: typeorm_config_1.getTypeOrmConfig,
             }),
             jwt_1.JwtModule.register({}),
             auth_module_1.AuthModule,

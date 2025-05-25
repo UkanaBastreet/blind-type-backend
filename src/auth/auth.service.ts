@@ -6,10 +6,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'src/users/entities/user.entity';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,11 +17,11 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
-  async login(userDto: CreateUserDto) {
+  async login(userDto: LoginDto) {
     const user = await this.validateUser(userDto);
     return this.generateToken(user);
   }
-  async registration(userDto: CreateUserDto) {
+  async registration(userDto: LoginDto) {
     const candidate = await this.usersService.getUserByEmail(userDto.email);
 
     if (candidate) {
@@ -31,7 +31,7 @@ export class AuthService {
       );
     }
 
-    const hashPassword = await bcrypt.hash(userDto.password, 5);
+    const hashPassword = (await bcrypt.hash(userDto.password, 5)) as string;
 
     const user = await this.usersService
       .create({
@@ -50,7 +50,7 @@ export class AuthService {
       token,
     });
   }
-  async validateUser(userDto: CreateUserDto) {
+  async validateUser(userDto: LoginDto) {
     const user = await this.usersService.getUserByEmail(userDto.email);
     if (!user) {
       throw new NotFoundException('User with that email is not found');

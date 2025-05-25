@@ -28,7 +28,7 @@ let AuthService = class AuthService {
         if (candidate) {
             throw new common_1.HttpException('User with this email is already exist', common_1.HttpStatus.BAD_REQUEST);
         }
-        const hashPassword = await bcrypt.hash(userDto.password, 5);
+        const hashPassword = (await bcrypt.hash(userDto.password, 5));
         const user = await this.usersService
             .create({
             ...userDto,

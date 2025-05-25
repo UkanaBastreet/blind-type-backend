@@ -39,10 +39,6 @@ let UsersService = class UsersService {
         });
         return user;
     }
-    async update(id, updateUserDto) {
-        const res = await this.usersRepository.update(id, updateUserDto);
-        return res;
-    }
     async remove(id) {
         const user = await this.usersRepository.delete({ id });
         return user;
