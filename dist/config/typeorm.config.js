@@ -4,16 +4,18 @@ exports.getTypeOrmConfig = getTypeOrmConfig;
 function getTypeOrmConfig(configService) {
     return {
         type: 'postgres',
-        host: configService.getOrThrow('POSTGRES_HOST'),
-        port: configService.getOrThrow('POSTGRES_PORT'),
-        username: configService.getOrThrow('POSTGRES_USER'),
-        password: configService.getOrThrow('POSTGRES_PASSWORD'),
-        database: configService.getOrThrow('POSTGRES_DATABASE'),
+        url: configService.get('POSTGRES_URL'),
+        ssl: true,
+        extra: {
+            ssl: {
+                rejectUnauthorized: false,
+            },
+            connectionLimit: 5,
+        },
         autoLoadEntities: true,
         synchronize: true,
-        extra: {
-            trustServerCertificate: true,
-        },
+        logging: ['query', 'error'],
+        poolSize: 5,
         connectTimeoutMS: 5000,
         retryAttempts: 3,
         retryDelay: 3000,

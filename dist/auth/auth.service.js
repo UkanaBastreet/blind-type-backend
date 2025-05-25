@@ -23,7 +23,7 @@ let AuthService = class AuthService {
         const user = await this.validateUser(userDto);
         return this.generateToken(user);
     }
-    async registration(userDto) {
+    async registration(req, userDto) {
         const candidate = await this.usersService.getUserByEmail(userDto.email);
         if (candidate) {
             throw new common_1.HttpException('User with this email is already exist', common_1.HttpStatus.BAD_REQUEST);
@@ -35,7 +35,7 @@ let AuthService = class AuthService {
             password: hashPassword,
         })
             .then((res) => res.raw);
-        return this.generateToken(user);
+        return this.saveSession(req, user);
     }
     generateToken(user) {
         const payload = { email: user.email, id: user.id };
@@ -55,6 +55,17 @@ let AuthService = class AuthService {
         }
         throw new common_1.UnauthorizedException({
             message: 'Invalid email or password',
+        });
+    }
+    async saveSession(req, user) {
+        return new Promise((res, rej) => {
+            req.session.userId = user.id;
+            req.session.save((err) => {
+                if (err) {
+                    rej(err);
+                }
+                res(user);
+            });
         });
     }
 };

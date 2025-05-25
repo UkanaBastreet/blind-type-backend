@@ -10,6 +10,7 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'src/users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
     const user = await this.validateUser(userDto);
     return this.generateToken(user);
   }
-  async registration(userDto: LoginDto) {
+  async registration(req: Request, userDto: LoginDto) {
     const candidate = await this.usersService.getUserByEmail(userDto.email);
 
     if (candidate) {
@@ -40,7 +41,8 @@ export class AuthService {
       })
       .then((res) => res.raw);
 
-    return this.generateToken(user);
+    // return this.generateToken(user);
+    return this.saveSession(req, user);
   }
   generateToken(user: User) {
     const payload = { email: user.email, id: user.id };
@@ -67,6 +69,17 @@ export class AuthService {
 
     throw new UnauthorizedException({
       message: 'Invalid email or password',
+    });
+  }
+  private async saveSession(req: Request, user: User) {
+    return new Promise((res, rej) => {
+      req.session.userId = user.id;
+      req.session.save((err) => {
+        if (err) {
+          rej(err);
+        }
+        res(user);
+      });
     });
   }
 }

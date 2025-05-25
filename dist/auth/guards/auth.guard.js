@@ -18,6 +18,10 @@ let AuthGuard = class AuthGuard {
     }
     canActivate(context) {
         const request = context.switchToHttp().getRequest();
+        if (request.session.userId) {
+            console.log('request.session.userId');
+            return true;
+        }
         try {
             const authHeader = request.headers.authorization;
             const bearer = authHeader.split(' ')[0];
@@ -25,8 +29,6 @@ let AuthGuard = class AuthGuard {
             if (bearer !== 'Bearer' && !token) {
                 throw new common_1.UnauthorizedException();
             }
-            const user = this.jwtService.verify(token);
-            request.user = user;
             return true;
         }
         catch (error) {
