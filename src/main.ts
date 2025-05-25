@@ -8,6 +8,8 @@ import { ConfigService } from '@nestjs/config';
 import { sessionConfig } from './config/session.config';
 import * as cookieParser from 'cookie-parser';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { join } from 'path';
+import express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,12 +23,23 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, document, {
+    customSiteTitle: 'API Docs',
+    customCssUrl: '/swagger-ui/swagger-ui.css',
+    customJs: [
+      '/swagger-ui/swagger-ui-bundle.js',
+      '/swagger-ui/swagger-ui-standalone-preset.js',
+    ],
+  });
 
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
-
   app.use(session(sessionConfig(config)));
   app.use(cookieParser(COOKIE_SECRET));
+  app.use(
+    '/api',
+    express.static(join(__dirname, '..', 'node_modules', 'swagger-ui-dist')),
+  );
 
   app.enableCors({
     origin: ALLOWED_ORIGIN,
@@ -34,7 +47,6 @@ async function bootstrap() {
     exposedCorsHeaders: ['set-cookie'],
   } as CorsOptions);
 
-  SwaggerModule.setup('/', app, document);
   await app.listen(3000);
 }
 bootstrap();
