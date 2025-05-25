@@ -12,6 +12,8 @@ const cookieParser = require("cookie-parser");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const config = app.get(config_1.ConfigService);
+    const COOKIE_SECRET = config.getOrThrow('COOKIE_SECRET');
+    const ALLOWED_ORIGIN = config.getOrThrow('ALLOWED_ORIGIN');
     const swaggerConfig = new swagger_1.DocumentBuilder()
         .setTitle('Blind Type Backend')
         .setDescription('The notes API description')
@@ -21,9 +23,9 @@ async function bootstrap() {
     app.useGlobalFilters(new exception_interceptor_1.AllExceptionsFilter());
     app.useGlobalPipes(new common_1.ValidationPipe({ transform: true }));
     app.use(session((0, session_config_1.sessionConfig)(config)));
-    app.use(cookieParser(config.getOrThrow('COOKIE_SECRET')));
+    app.use(cookieParser(COOKIE_SECRET));
     app.enableCors({
-        origin: config.getOrThrow('ALLOWED_ORIGIN'),
+        origin: ALLOWED_ORIGIN,
         credentials: true,
         exposedCorsHeaders: ['set-cookie'],
     });

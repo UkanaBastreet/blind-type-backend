@@ -12,6 +12,9 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
+  const COOKIE_SECRET = config.getOrThrow('COOKIE_SECRET');
+  const ALLOWED_ORIGIN = config.getOrThrow('ALLOWED_ORIGIN');
+
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Blind Type Backend')
     .setDescription('The notes API description')
@@ -23,13 +26,14 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   app.use(session(sessionConfig(config)));
-  app.use(cookieParser(config.getOrThrow('COOKIE_SECRET')));
+  app.use(cookieParser(COOKIE_SECRET));
 
   app.enableCors({
-    origin: config.getOrThrow<string>('ALLOWED_ORIGIN'),
+    origin: ALLOWED_ORIGIN,
     credentials: true,
     exposedCorsHeaders: ['set-cookie'],
   } as CorsOptions);
+
   SwaggerModule.setup('/', app, document);
   await app.listen(3000);
 }
