@@ -11,3 +11,66 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
+
+
+auth
+    register
+        POST /auth/register
+        {
+            "username": "string",
+            "email": "string",
+            "password": "string"
+        }
+    login
+        POST /auth/login
+        {
+            "email": "string",
+            "password": "string"
+        }
+    logout
+        POST /auth/logout
+    password reset 
+        POST /auth/password-reset
+        {
+            "email": "string"
+        }
+    me 
+        GET /auth/me
+        {}
+game
+    practice
+        GET /game/practice
+        {
+            language: string,
+            mode: string,
+            time?: number,
+            length?: number,
+            punctuation?: boolean,
+            numbers?: boolean,
+        }
+    results
+        GET/results/:userId
+        POST/results/:userId
+        {
+            id: string
+            created_at
+        }
+lessons
+    GET /lessons
+settings
+    GET /
+    PATCH /
+stats
+    /me/ 
+    /leaderboard/
+    /:userId/
+
+
+ENTITIEs
+    user
+    gameResult
+    text
+    lesson
+    userStats
+    userSettings
+    

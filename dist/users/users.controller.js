@@ -16,7 +16,8 @@ exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
-const authorize_decorator_1 = require("../auth/decorators/authorize.decorator");
+const update_user_dto_1 = require("./dto/update-user.dto");
+const auth_decorator_1 = require("../auth/decorators/auth.decorator");
 let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
@@ -25,13 +26,13 @@ let UsersController = class UsersController {
         return this.usersService.findAll();
     }
     findOne(email) {
-        return this.usersService.findOne(email);
+        return this.usersService.findByEmail(email);
     }
     create(createUserDto) {
         return this.usersService.create(createUserDto);
     }
-    findOneBy(params) {
-        return this.usersService.findOneBy(params);
+    async update(id, updateUserDto) {
+        return this.usersService.update(id, updateUserDto);
     }
     async remove(id) {
         return this.usersService.remove(id);
@@ -59,12 +60,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, common_1.Param)()),
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
-    __metadata("design:returntype", void 0)
-], UsersController.prototype, "findOneBy", null);
+    __metadata("design:paramtypes", [String, update_user_dto_1.UpdateUserDto]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -73,8 +75,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "remove", null);
 exports.UsersController = UsersController = __decorate([
+    (0, auth_decorator_1.Auth)(),
     (0, common_1.Controller)('users'),
-    (0, authorize_decorator_1.Authorize)(),
     __metadata("design:paramtypes", [users_service_1.UsersService])
 ], UsersController);
 //# sourceMappingURL=users.controller.js.map

@@ -11,35 +11,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_1 = require("@nestjs/jwt");
+const auth_service_1 = require("../auth.service");
 let AuthGuard = class AuthGuard {
-    constructor(jwtService) {
-        this.jwtService = jwtService;
+    constructor(authService) {
+        this.authService = authService;
     }
-    canActivate(context) {
+    async canActivate(context) {
         const request = context.switchToHttp().getRequest();
-        if (request.session.userId) {
-            console.log('request.session.userId');
-            return true;
+        const token = request.headers.authorization?.split(' ')[1];
+        if (!token) {
+            throw new common_1.UnauthorizedException('No token provided');
         }
-        try {
-            const authHeader = request.headers.authorization;
-            const bearer = authHeader.split(' ')[0];
-            const token = authHeader.split(' ')[1];
-            if (bearer !== 'Bearer' && !token) {
-                throw new common_1.UnauthorizedException();
-            }
-            return true;
-        }
-        catch (error) {
-            throw new common_1.UnauthorizedException({ message: error });
-        }
-        return false;
+        return await this.authService.validateToken(token);
     }
 };
 exports.AuthGuard = AuthGuard;
 exports.AuthGuard = AuthGuard = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [jwt_1.JwtService])
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthGuard);
 //# sourceMappingURL=auth.guard.js.map

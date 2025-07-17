@@ -10,6 +10,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
+const game_entity_1 = require("../../game/entities/game.entity");
+const settings_entity_1 = require("../../settings/entities/settings.entity");
+const stats_entity_1 = require("../../stats/entities/stats.entity");
 const typeorm_1 = require("typeorm");
 let User = class User {
 };
@@ -18,6 +21,10 @@ __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)('uuid'),
     __metadata("design:type", String)
 ], User.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ unique: true }),
+    __metadata("design:type", String)
+], User.prototype, "username", void 0);
 __decorate([
     (0, typeorm_1.Column)({ unique: true }),
     __metadata("design:type", String)
@@ -34,6 +41,18 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'enum', enum: ['admin', 'user', 'guest'], default: 'user' }),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => game_entity_1.Game, (game) => game.userId),
+    __metadata("design:type", Array)
+], User.prototype, "games", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => stats_entity_1.Stats, (stat) => stat.userId),
+    __metadata("design:type", stats_entity_1.Stats)
+], User.prototype, "stats", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => settings_entity_1.Settings, (settings) => settings.userId),
+    __metadata("design:type", settings_entity_1.Settings)
+], User.prototype, "settings", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);

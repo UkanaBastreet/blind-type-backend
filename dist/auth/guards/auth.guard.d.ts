@@ -1,8 +1,7 @@
 import { CanActivate, ExecutionContext } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { Observable } from 'rxjs';
+import { AuthService } from '../auth.service';
 export declare class AuthGuard implements CanActivate {
-    private jwtService;
-    constructor(jwtService: JwtService);
-    canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean>;
+    private readonly authService;
+    constructor(authService: AuthService);
+    canActivate(context: ExecutionContext): Promise<boolean>;
 }

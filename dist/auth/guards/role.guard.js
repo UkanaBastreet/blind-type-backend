@@ -12,37 +12,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleGuard = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
-const typeorm_1 = require("typeorm");
+const auth_service_1 = require("../auth.service");
 let RoleGuard = class RoleGuard {
-    constructor(reflector, userRepository) {
+    constructor(reflector, authService) {
         this.reflector = reflector;
-        this.userRepository = userRepository;
+        this.authService = authService;
     }
     async canActivate(ctx) {
         const requiredRoles = this.reflector.getAllAndOverride('roles', [
             ctx.getClass(),
             ctx.getHandler(),
         ]);
+        const request = ctx.switchToHttp().getRequest();
         if (!requiredRoles || requiredRoles.length === 0) {
             return true;
         }
-        const request = ctx.switchToHttp().getRequest();
-        if (request.session.userId) {
-            throw new common_1.UnauthorizedException('User is not authenticated');
+        const token = request.headers.authorization?.split(' ')[1];
+        if (!token) {
+            throw new common_1.UnauthorizedException('No token provided');
         }
-        const user = await this.userRepository.findOne({
-            where: { id: request.session.userId },
-        });
-        if (requiredRoles.includes(user.role)) {
-            return true;
-        }
-        throw new common_1.ForbiddenException('Access denied');
+        return await this.authService.validateToken(token);
     }
 };
 exports.RoleGuard = RoleGuard;
 exports.RoleGuard = RoleGuard = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [core_1.Reflector,
-        typeorm_1.Repository])
+        auth_service_1.AuthService])
 ], RoleGuard);
 //# sourceMappingURL=role.guard.js.map

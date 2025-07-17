@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,33 +12,66 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const user = this.usersRepository.insert(createUserDto);
-    return user;
+    const user = this.usersRepository.create(createUserDto);
+    return this.usersRepository.save(user);
   }
 
   async findAll() {
-    const res = await this.usersRepository.find();
+    const res = await this.usersRepository.find({
+      select: {
+        id: true,
+        email: true,
+        games: true,
+      },
+    });
     return res;
   }
 
-  async findOne(email: string) {
-    const user = this.usersRepository.findOneBy({ email });
+  async findById(id: string) {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      throw new Error(`User with ID ${id} not found`);
+    }
     return user;
   }
 
-  async findOneBy(params: string[]) {
-    const user = this.usersRepository.findOneBy({
-      [params[0]]: params[1],
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.usersRepository.preload({
+      id,
+      ...updateUserDto,
     });
-    return user;
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return this.usersRepository.save(user);
   }
 
   async remove(id: string) {
+    const userExists = await this.usersRepository.findOneBy({ id });
+    if (!userExists) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
     const user = await this.usersRepository.delete({ id });
+
     return user;
   }
-  async getUserByEmail(email: string) {
+
+  async getShortById(id: string) {
+    const user = await this.findById(id);
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
+  }
+
+  async findByEmail(email: string) {
     const user = await this.usersRepository.findOneBy({ email });
     return user;
+  }
+
+  async checkEmailExists(email: string): Promise<boolean> {
+    return await this.usersRepository.exists({ where: { email } });
   }
 }

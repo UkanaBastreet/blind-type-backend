@@ -1,8 +1,7 @@
 import {
-  HttpException,
-  HttpStatus,
   Injectable,
   UnauthorizedException,
+  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -10,7 +9,7 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'src/users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
-import { Request } from 'express';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,68 +17,104 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
-  async login(userDto: LoginDto) {
-    const user = await this.validateUser(userDto);
-    return this.generateToken(user);
-  }
-  async registration(req: Request, userDto: LoginDto) {
-    const candidate = await this.usersService.getUserByEmail(userDto.email);
 
-    if (candidate) {
-      throw new HttpException(
-        'User with this email is already exist',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    const hashPassword = (await bcrypt.hash(userDto.password, 5)) as string;
-
-    const user = await this.usersService
-      .create({
-        ...userDto,
-        password: hashPassword,
-      })
-      .then((res) => res.raw);
-
-    // return this.generateToken(user);
-    return this.saveSession(req, user);
-  }
-  generateToken(user: User) {
-    const payload = { email: user.email, id: user.id };
-
-    const token = this.jwtService.sign(payload);
-    return JSON.stringify({
-      token,
-    });
-  }
-  async validateUser(userDto: LoginDto) {
-    const user = await this.usersService.getUserByEmail(userDto.email);
+  public async login(userDto: LoginDto): Promise<any> {
+    const user = await this.usersService.findByEmail(userDto.email);
     if (!user) {
-      throw new NotFoundException('User with that email is not found');
+      throw new NotFoundException('User with this email not found');
     }
-
-    const passwordEquals = await bcrypt.compare(
+    const isMatch = await this.validatePassword(
       userDto.password,
       user.password,
     );
-
-    if (user && passwordEquals) {
-      return user;
+    if (!isMatch) {
+      throw new UnauthorizedException('Invalid credentials');
     }
+    const token = this.generateToken(user);
+    return {
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        createdAt: user.createdAt,
+      },
+    };
+  }
 
-    throw new UnauthorizedException({
-      message: 'Invalid email or password',
+  public async registration(userDto: RegisterDto) {
+    const candidate = await this.usersService.findByEmail(userDto.email);
+    if (candidate) {
+      throw new BadRequestException('User with this email already exists');
+    }
+    const hashPassword = (await bcrypt.hash(userDto.password, 5)) as string;
+    const user = await this.usersService.create({
+      ...userDto,
+      password: hashPassword,
     });
+    const token = this.generateToken(user);
+
+    return {
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+      },
+    };
   }
-  private async saveSession(req: Request, user: User) {
-    return new Promise((res, rej) => {
-      req.session.userId = user.id;
-      req.session.save((err) => {
-        if (err) {
-          rej(err);
-        }
-        res(user);
-      });
-    });
+  public async getMe() {
+    // const user = await this.usersService.getMe();
+    // if (!user) {
+    //   throw new UnauthorizedException('User not found');
+    // }
+    // return {
+    //   id: user.id,
+    //   email: user.email,
+    //   createdAt: user.createdAt,
+    // };
   }
+  private generateToken(user: User) {
+    const payload = { email: user.email, id: user.id };
+
+    const token = this.jwtService.sign(payload);
+    return token;
+  }
+  async validatePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return await bcrypt.compare(password, hashedPassword);
+  }
+  async validateToken(token: string): Promise<boolean> {
+    const decoded = this.jwtService.verify(token);
+    const user = await this.usersService.findById(decoded.id);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    return true;
+  }
+  // async validateTokenOrThrow(token: string): Promise<boolean> {
+  //   const decoded = this.jwtService.verify(token);
+  //   const user = await this.usersService.findById(decoded.id);
+  //   if (!user) {
+  //     throw new UnauthorizedException('User not found');
+  //   }
+  //   return true;
+  // }
+  // private saveTokenToCookie(res: Response, token: string): void {
+  //   res.cookie('token', token, {
+  //     maxAge: 60 * 60 * 24 * 30 * 1000, // 30 days
+  //     httpOnly: true,
+  //     secure: process.env.NODE_ENV === 'production',
+  //     sameSite: 'lax',
+  //   });
+  // }
+  // private removeTokenFromCookie(res: Response): void {
+  //   res.clearCookie('token', {
+  //     httpOnly: true,
+  //     secure: process.env.NODE_ENV === 'production',
+  //     sameSite: 'lax',
+  //   });
+  // }
 }

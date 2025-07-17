@@ -8,14 +8,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
 const users_module_1 = require("./users/users.module");
 const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const jwt_1 = require("@nestjs/jwt");
 const auth_module_1 = require("./auth/auth.module");
-const typeorm_config_1 = require("./config/typeorm.config");
+const typeorm_config_1 = require("./.config/typeorm.config");
+const game_module_1 = require("./game/game.module");
+const stats_module_1 = require("./stats/stats.module");
+const lessons_module_1 = require("./lessons/lessons.module");
+const settings_module_1 = require("./settings/settings.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -34,9 +36,11 @@ exports.AppModule = AppModule = __decorate([
             }),
             jwt_1.JwtModule.register({}),
             auth_module_1.AuthModule,
+            game_module_1.GameModule,
+            stats_module_1.StatsModule,
+            lessons_module_1.LessonsModule,
+            settings_module_1.SettingsModule,
         ],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

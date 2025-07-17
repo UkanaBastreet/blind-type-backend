@@ -22,30 +22,58 @@ let UsersService = class UsersService {
         this.usersRepository = usersRepository;
     }
     async create(createUserDto) {
-        const user = this.usersRepository.insert(createUserDto);
-        return user;
+        const user = this.usersRepository.create(createUserDto);
+        return this.usersRepository.save(user);
     }
     async findAll() {
-        const res = await this.usersRepository.find();
+        const res = await this.usersRepository.find({
+            select: {
+                id: true,
+                email: true,
+                games: true,
+            },
+        });
         return res;
     }
-    async findOne(email) {
-        const user = this.usersRepository.findOneBy({ email });
+    async findById(id) {
+        const user = await this.usersRepository.findOneBy({ id });
+        if (!user) {
+            throw new Error(`User with ID ${id} not found`);
+        }
         return user;
     }
-    async findOneBy(params) {
-        const user = this.usersRepository.findOneBy({
-            [params[0]]: params[1],
+    async update(id, updateUserDto) {
+        const user = await this.usersRepository.preload({
+            id,
+            ...updateUserDto,
         });
-        return user;
+        if (!user) {
+            throw new common_1.NotFoundException(`User with ID ${id} not found`);
+        }
+        return this.usersRepository.save(user);
     }
     async remove(id) {
+        const userExists = await this.usersRepository.findOneBy({ id });
+        if (!userExists) {
+            throw new common_1.NotFoundException(`User with ID ${id} not found`);
+        }
         const user = await this.usersRepository.delete({ id });
         return user;
     }
-    async getUserByEmail(email) {
+    async getShortById(id) {
+        const user = await this.findById(id);
+        return {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+        };
+    }
+    async findByEmail(email) {
         const user = await this.usersRepository.findOneBy({ email });
         return user;
+    }
+    async checkEmailExists(email) {
+        return await this.usersRepository.exists({ where: { email } });
     }
 };
 exports.UsersService = UsersService;

@@ -20,53 +20,62 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async login(userDto) {
-        const user = await this.validateUser(userDto);
-        return this.generateToken(user);
+        const user = await this.usersService.findByEmail(userDto.email);
+        if (!user) {
+            throw new common_1.NotFoundException('User with this email not found');
+        }
+        const isMatch = await this.validatePassword(userDto.password, user.password);
+        if (!isMatch) {
+            throw new common_1.UnauthorizedException('Invalid credentials');
+        }
+        const token = this.generateToken(user);
+        return {
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                createdAt: user.createdAt,
+            },
+        };
     }
-    async registration(req, userDto) {
-        const candidate = await this.usersService.getUserByEmail(userDto.email);
+    async registration(userDto) {
+        const candidate = await this.usersService.findByEmail(userDto.email);
         if (candidate) {
-            throw new common_1.HttpException('User with this email is already exist', common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.BadRequestException('User with this email already exists');
         }
         const hashPassword = (await bcrypt.hash(userDto.password, 5));
-        const user = await this.usersService
-            .create({
+        const user = await this.usersService.create({
             ...userDto,
             password: hashPassword,
-        })
-            .then((res) => res.raw);
-        return this.saveSession(req, user);
+        });
+        const token = this.generateToken(user);
+        return {
+            token,
+            user: {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+                createdAt: user.createdAt,
+            },
+        };
+    }
+    async getMe() {
     }
     generateToken(user) {
         const payload = { email: user.email, id: user.id };
         const token = this.jwtService.sign(payload);
-        return JSON.stringify({
-            token,
-        });
+        return token;
     }
-    async validateUser(userDto) {
-        const user = await this.usersService.getUserByEmail(userDto.email);
+    async validatePassword(password, hashedPassword) {
+        return await bcrypt.compare(password, hashedPassword);
+    }
+    async validateToken(token) {
+        const decoded = this.jwtService.verify(token);
+        const user = await this.usersService.findById(decoded.id);
         if (!user) {
-            throw new common_1.NotFoundException('User with that email is not found');
+            throw new common_1.UnauthorizedException('User not found');
         }
-        const passwordEquals = await bcrypt.compare(userDto.password, user.password);
-        if (user && passwordEquals) {
-            return user;
-        }
-        throw new common_1.UnauthorizedException({
-            message: 'Invalid email or password',
-        });
-    }
-    async saveSession(req, user) {
-        return new Promise((res, rej) => {
-            req.session.userId = user.id;
-            req.session.save((err) => {
-                if (err) {
-                    rej(err);
-                }
-                res(user);
-            });
-        });
+        return true;
     }
 };
 exports.AuthService = AuthService;

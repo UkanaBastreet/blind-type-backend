@@ -1,10 +1,9 @@
 import { CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { User } from 'src/users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { AuthService } from '../auth.service';
 export declare class RoleGuard implements CanActivate {
     private reflector;
-    private readonly userRepository;
-    constructor(reflector: Reflector, userRepository: Repository<User>);
+    private readonly authService;
+    constructor(reflector: Reflector, authService: AuthService);
     canActivate(ctx: ExecutionContext): Promise<boolean>;
 }

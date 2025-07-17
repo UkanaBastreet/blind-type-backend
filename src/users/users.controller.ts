@@ -1,10 +1,19 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Patch,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Authorize } from 'src/auth/decorators/authorize.decorator';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
+@Auth()
 @Controller('users')
-@Authorize()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -15,16 +24,17 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('email') email: string) {
-    return this.usersService.findOne(email);
+    return this.usersService.findByEmail(email);
   }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
-  @Get()
-  findOneBy(@Param() params: string[]) {
-    return this.usersService.findOneBy(params);
+
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')

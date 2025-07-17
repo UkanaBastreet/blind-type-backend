@@ -1,15 +1,23 @@
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
-import { User } from 'src/users/entities/user.entity';
 import { LoginDto } from './dto/login.dto';
-import { Request } from 'express';
+import { RegisterDto } from './dto/register.dto';
 export declare class AuthService {
     private usersService;
     private jwtService;
     constructor(usersService: UsersService, jwtService: JwtService);
-    login(userDto: LoginDto): Promise<string>;
-    registration(req: Request, userDto: LoginDto): Promise<unknown>;
-    generateToken(user: User): string;
-    validateUser(userDto: LoginDto): Promise<User>;
-    private saveSession;
+    login(userDto: LoginDto): Promise<any>;
+    registration(userDto: RegisterDto): Promise<{
+        token: string;
+        user: {
+            id: string;
+            email: string;
+            role: string;
+            createdAt: Date;
+        };
+    }>;
+    getMe(): Promise<void>;
+    private generateToken;
+    validatePassword(password: string, hashedPassword: string): Promise<boolean>;
+    validateToken(token: string): Promise<boolean>;
 }
