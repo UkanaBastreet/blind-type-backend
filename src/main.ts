@@ -29,7 +29,7 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder().setTitle('BlindType Api').build();
   const documentFactory = () =>
     SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api', app, documentFactory, {
+  SwaggerModule.setup('/', app, documentFactory, {
     customSiteTitle: 'BlindType API',
     customCssUrl:
       'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css',
