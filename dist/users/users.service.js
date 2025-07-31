@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const typeorm_2 = require("@nestjs/typeorm");
+const role_enum_type_1 = require("./types/role-enum.type");
 let UsersService = class UsersService {
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
@@ -46,6 +47,7 @@ let UsersService = class UsersService {
         const user = await this.usersRepository.preload({
             id,
             ...updateUserDto,
+            role: role_enum_type_1.RoleEnum.USER,
         });
         if (!user) {
             throw new common_1.NotFoundException(`User with ID ${id} not found`);

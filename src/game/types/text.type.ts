@@ -1,1 +1,9 @@
-export type practiceTextMode = 'time' | 'words' | 'lesson';
+export enum textModeEnum {
+  'time',
+  'words',
+  'lesson',
+}
+export enum languageEnum {
+  'en',
+  'ru',
+}

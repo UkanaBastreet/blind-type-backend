@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Game } from './entities/game.entity';
 import { AddGameDto } from './dto/add-game.dto';
-import { getTextDto } from './dto/get-text.dto';
+import { GetTextDto } from './dto/get-text.dto';
 
 @Injectable()
 export class GameService {
@@ -11,7 +11,7 @@ export class GameService {
     @InjectRepository(Game) private gameRepository: Repository<Game>,
   ) {}
 
-  async getRandomText(params: getTextDto) {
+  async getRandomText(params: GetTextDto) {
     return 'Random text for the game' + params.language;
   }
 

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RoleEnum } from './types/role-enum.type';
 
 @Injectable()
 export class UsersService {
@@ -39,6 +40,7 @@ export class UsersService {
     const user = await this.usersRepository.preload({
       id,
       ...updateUserDto,
+      role: RoleEnum.USER,
     });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);

@@ -9,6 +9,7 @@ import { AllExceptionsFilter } from './exception.interceptor';
 
 import { AppModule } from './app.module';
 import { corsConfig } from './.config/cors.config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,6 +25,11 @@ async function bootstrap() {
   // app.use(session(sessionConfig(config)));
 
   app.enableCors(corsConfig(config));
+
+  const swaggerConfig = new DocumentBuilder().setTitle('BlindType Api').build();
+  const documentFactory = () =>
+    SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('api', app, documentFactory);
 
   await app.listen(APPLICATION_PORT, () =>
     console.log('App running at port: ' + APPLICATION_PORT),

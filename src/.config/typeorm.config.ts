@@ -7,6 +7,7 @@ export function getTypeOrmConfig(
   const mode = configService.getOrThrow<string>('mode');
   const isDev = mode === 'development' && process.env.NODE_ENV !== 'production';
   const POSTGRES_URL = configService.getOrThrow<string>('POSTGRES_URL');
+
   return {
     type: 'postgres',
     url: POSTGRES_URL,

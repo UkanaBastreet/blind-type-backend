@@ -9,14 +9,15 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { RoleEnum } from '../types/role-enum.type';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
-  username: string;
+  @Column({ unique: true, nullable: true })
+  username?: string;
 
   @Column({ unique: true })
   email: string;
@@ -27,14 +28,14 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Column({ type: 'enum', enum: ['admin', 'user', 'guest'], default: 'user' })
-  role: string;
+  @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.USER })
+  role: RoleEnum;
 
   @OneToMany(() => Game, (game) => game.userId)
-  games: Game[]; // Assuming a one-to-many relationship with Game
+  games: Game[];
 
   @OneToOne(() => Stats, (stat) => stat.userId)
-  stats: Stats; // Assuming a one-to-one relationship with Stat
+  stats: Stats;
 
   @OneToOne(() => Settings, (settings) => settings.userId)
   settings: Settings;

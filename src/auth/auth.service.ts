@@ -17,7 +17,6 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
-
   public async login(userDto: LoginDto): Promise<any> {
     const user = await this.usersService.findByEmail(userDto.email);
     if (!user) {
@@ -40,7 +39,6 @@ export class AuthService {
       },
     };
   }
-
   public async registration(userDto: RegisterDto) {
     const candidate = await this.usersService.findByEmail(userDto.email);
     if (candidate) {

@@ -1,1 +1,1 @@
-{"version":3,"file":"add-game.dto.js","sourceRoot":"","sources":["../../../src/game/dto/add-game.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,qCAAmE;AAEnE,MAAa,UAAU;CAMtB;AAND,gCAMC;AAJC;IADC,IAAA,gCAAsB,GAAE;;sCACd;AAGX;IADC,IAAA,0BAAgB,GAAE;8BACR,IAAI;6CAAC"}
+{"version":3,"file":"add-game.dto.js","sourceRoot":"","sources":["../../../src/game/dto/add-game.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,6CAA8C;AAC9C,qCAAiD;AAEjD,MAAa,UAAU;CAItB;AAJD,gCAIC;AADC;IAFC,IAAA,qBAAW,EAAC,EAAE,IAAI,EAAE,MAAM,EAAE,CAAC;IAC7B,IAAA,gCAAsB,GAAE;;sCACd"}

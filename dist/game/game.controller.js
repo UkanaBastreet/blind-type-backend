@@ -16,19 +16,12 @@ exports.GameController = void 0;
 const common_1 = require("@nestjs/common");
 const game_service_1 = require("./game.service");
 const add_game_dto_1 = require("./dto/add-game.dto");
+const get_text_dto_1 = require("./dto/get-text.dto");
 let GameController = class GameController {
     constructor(gameService) {
         this.gameService = gameService;
     }
-    getRandomText(language, mode, time, length, punctuation, numbers) {
-        const params = {
-            language: language || 'en',
-            time: time,
-            length: length,
-            punctuation: punctuation,
-            numbers: numbers,
-            mode: mode,
-        };
+    getRandomText(params) {
         return this.gameService.getRandomText(params);
     }
     addGameResults(userId, dto) {
@@ -42,13 +35,8 @@ exports.GameController = GameController;
 __decorate([
     (0, common_1.Get)('/practice'),
     __param(0, (0, common_1.Query)('language')),
-    __param(1, (0, common_1.Query)('mode')),
-    __param(2, (0, common_1.Query)('time')),
-    __param(3, (0, common_1.Query)('length')),
-    __param(4, (0, common_1.Query)('punctuation')),
-    __param(5, (0, common_1.Query)('numbers')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Number, Number, Boolean, Boolean]),
+    __metadata("design:paramtypes", [get_text_dto_1.GetTextDto]),
     __metadata("design:returntype", void 0)
 ], GameController.prototype, "getRandomText", null);
 __decorate([

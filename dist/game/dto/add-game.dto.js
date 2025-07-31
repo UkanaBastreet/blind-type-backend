@@ -10,16 +10,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AddGameDto = void 0;
+const swagger_1 = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 class AddGameDto {
 }
 exports.AddGameDto = AddGameDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({ type: String }),
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", String)
 ], AddGameDto.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], AddGameDto.prototype, "createdAt", void 0);
 //# sourceMappingURL=add-game.dto.js.map

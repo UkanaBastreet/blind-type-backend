@@ -14,6 +14,7 @@ const game_entity_1 = require("../../game/entities/game.entity");
 const settings_entity_1 = require("../../settings/entities/settings.entity");
 const stats_entity_1 = require("../../stats/entities/stats.entity");
 const typeorm_1 = require("typeorm");
+const role_enum_type_1 = require("../types/role-enum.type");
 let User = class User {
 };
 exports.User = User;
@@ -22,7 +23,7 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ unique: true }),
+    (0, typeorm_1.Column)({ unique: true, nullable: true }),
     __metadata("design:type", String)
 ], User.prototype, "username", void 0);
 __decorate([
@@ -38,8 +39,8 @@ __decorate([
     __metadata("design:type", Date)
 ], User.prototype, "createdAt", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'enum', enum: ['admin', 'user', 'guest'], default: 'user' }),
-    __metadata("design:type", String)
+    (0, typeorm_1.Column)({ type: 'enum', enum: role_enum_type_1.RoleEnum, default: role_enum_type_1.RoleEnum.USER }),
+    __metadata("design:type", Number)
 ], User.prototype, "role", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => game_entity_1.Game, (game) => game.userId),

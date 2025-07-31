@@ -12,15 +12,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateSettingsDto = void 0;
 const class_validator_1 = require("class-validator");
 const settings_type_1 = require("../types/settings.type");
+const swagger_1 = require("@nestjs/swagger");
 class UpdateSettingsDto {
 }
 exports.UpdateSettingsDto = UpdateSettingsDto;
 __decorate([
+    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateSettingsDto.prototype, "theme", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

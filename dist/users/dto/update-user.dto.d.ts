@@ -2,5 +2,5 @@ export declare class UpdateUserDto {
     email: string;
     username?: string;
     password: string;
-    role: string;
+    role?: string;
 }

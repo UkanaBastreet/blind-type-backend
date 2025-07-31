@@ -12,7 +12,7 @@ export declare class AuthService {
         user: {
             id: string;
             email: string;
-            role: string;
+            role: import("../users/types/role-enum.type").RoleEnum;
             createdAt: Date;
         };
     }>;
