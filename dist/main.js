@@ -16,7 +16,17 @@ async function bootstrap() {
     app.enableCors((0, cors_config_1.corsConfig)(config));
     const swaggerConfig = new swagger_1.DocumentBuilder().setTitle('BlindType Api').build();
     const documentFactory = () => swagger_1.SwaggerModule.createDocument(app, swaggerConfig);
-    swagger_1.SwaggerModule.setup('api', app, documentFactory);
+    swagger_1.SwaggerModule.setup('api', app, documentFactory, {
+        customSiteTitle: 'BlindType API',
+        customCssUrl: 'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui.css',
+        customJs: [
+            'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-bundle.js',
+            'https://cdn.jsdelivr.net/npm/swagger-ui-dist@3/swagger-ui-standalone-preset.js',
+        ],
+        swaggerOptions: {
+            persistAuthorization: true,
+        },
+    });
     await app.listen(APPLICATION_PORT, () => console.log('App running at port: ' + APPLICATION_PORT));
 }
 bootstrap();
